@@ -102,3 +102,49 @@ VectorizedBootstrap2 <- function(W, theta, ...) {
   theta.star <- theta(W, ...)
   as.vector(theta.star)
 }
+
+
+## Generates the results for Fig. 4
+##
+ReplicateVecTiming <- function(K = 3, N.seq, x1, x2) {
+  n.N <- length(N.seq)
+  at1.W <- at2.W <- at3.W <- matrix(0, n.N, 3)
+  at1.M <- at2.M <- at3.M <- matrix(0, n.N, 3)  
+  for (k in seq(K)) {
+    t1.W <- matrix(NA, n.N, 3, dimnames = list(as.character(N.seq), c("user", "system", "elapsed")))
+    t1.M <- matrix(NA, n.N, 3, dimnames = list(as.character(N.seq), c("user", "system", "elapsed")))
+    t2.W <- matrix(NA, n.N, 3, dimnames = list(as.character(N.seq), c("user", "system", "elapsed")))
+    t2.M <- matrix(NA, n.N, 3, dimnames = list(as.character(N.seq), c("user", "system", "elapsed")))
+    t3.W <- matrix(NA, n.N, 3, dimnames = list(as.character(N.seq), c("user", "system", "elapsed")))
+    t3.M <- matrix(NA, n.N, 3, dimnames = list(as.character(N.seq), c("user", "system", "elapsed")))
+    for(i in seq(n.N)) {
+      cat("k, i = ", c(k, i), "\n")
+      x1 <- X1[seq(N.seq[i])]
+      x2 <- X2[seq(N.seq[i])] 
+      cat("1e+4, ", "\n")
+      W1 <- system.time(W <- BootWeights(N.seq[i], 10000))
+      M1 <- system.time(out <- VectorizedBootstrap2(W, SampleBootCor, x1, x2))
+      t1.W[i,] <- W1[1:3]
+      t1.M[i,] <- M1[1:3]
+      cat("1e+5, ", "\n")
+      W2 <- system.time(W <- BootWeights(N.seq[i], 100000))
+      M2 <- system.time(out <- VectorizedBootstrap2(W, SampleBootCor, x1, x2))
+      t2.W[i,] <- W2[1:3]
+      t2.M[i,] <- M2[1:3]
+      cat("1e+6, ", "\n")
+      W3 <- system.time(W <- BootWeights(N.seq[i], 1000000))
+      M3 <- system.time(out <- VectorizedBootstrap2(W, SampleBootCor, x1, x2))
+      t3.W[i,] <- W3[1:3]
+      t3.M[i,] <- M3[1:3]
+    }
+    at1.W <- at1.W + t1.W 
+    at2.W <- at2.W + t2.W
+    at3.W <- at3.W + t3.W
+    at1.M <- at1.M + t1.M 
+    at2.M <- at2.M + t2.M
+    at3.M <- at3.M + t3.M
+  }
+  list(at1.W = at1.W/K, at2.W = at2.W/K, at3.W = at3.W/K,
+       at1.M = at1.M/K, at2.M = at2.M/K, at3.M = at3.M/K)
+}
+
