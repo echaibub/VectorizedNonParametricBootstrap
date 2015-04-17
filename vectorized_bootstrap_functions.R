@@ -1,6 +1,6 @@
-#######################################
-## basic R functions
-#######################################
+###############################################################
+## basic R functions used for the comparisons in the main text
+###############################################################
 
 library(bootstrap)
 library(boot)
@@ -147,4 +147,5 @@ ReplicateVecTiming <- function(K = 3, N.seq, x1, x2) {
   list(at1.W = at1.W/K, at2.W = at2.W/K, at3.W = at3.W/K,
        at1.M = at1.M/K, at2.M = at2.M/K, at3.M = at3.M/K)
 }
+
 
