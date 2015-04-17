@@ -86,7 +86,7 @@ plot(B.seq, t1.time[, k], type = "n", ylim = c(min(t1.time[, k]), max(t2.time[, 
 legend("topleft", text.col = c("blue", "orange"), 
        col = c("blue", "orange"), bty = "n", cex = cle,
        legend = c("multinomial frequencies",
-                  "poisson frequencies"))
+                  "Poisson frequencies"))
 lines(B.seq, t1.time[, k], col = "blue", lwd = 2)
 lines(B.seq, t2.time[, k], col = "orange")
 mtext("(a)", side = 3, line = 0.5, at = 9.5e+5, cex = cp)
@@ -98,7 +98,7 @@ plot(B.seq, t1.time[, k], type = "n", ylim = c(min(t1.time[, k]), max(t2.time[, 
 legend("topleft", text.col = c("blue", "orange"), 
        col = c("blue", "orange"), bty = "n", cex = cle,
        legend = c("multinomial frequencies",
-                  "poisson frequencies"))
+                  "Poisson frequencies"))
 lines(B.seq, t1.time[, k], col = "blue", lwd = 2)
 lines(B.seq, t2.time[, k], col = "orange")
 mtext("(b)", side = 3, line = 0.5, at = 9.5e+5, cex = cp)
