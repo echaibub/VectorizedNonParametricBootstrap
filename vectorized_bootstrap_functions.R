@@ -30,6 +30,15 @@ VectorizedBootstrap <- function(N, B, theta, ...) {
   as.vector(theta.star)
 }
 
+
+Vectorized2SampleBootstrap <- function(N1, N2, B, theta, ...) {
+  call <- match.call()
+  W1 <- BootWeights(N1, B)
+  W2 <- BootWeights(N2, B)
+  theta.star <- theta(W1, W2, ...)
+  as.vector(theta.star)
+}
+
 ## Computes the correlation coefficient in vectorized form
 ## W: bootstrap weights matrix
 ## x1: variable 1 data vector
