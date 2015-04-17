@@ -39,3 +39,20 @@ SampleBootCor2 <- function(W, x1, x2) {
   s.12 <- s.12 - xbar.1 * xbar.2
   out <- s.12/sqrt(s2.1 * s2.2)
 }
+
+
+## Runs the vectorized approximate bootstrap based on Poisson frequencies 
+## N: number of data points
+## B: number of bootstrap replications
+## theta: function of the bootstrap weights, computing the statistic 
+##        of interest (in vectorized form)
+## ... : additional arguments passed to the theta function 
+## returns a vector of bootstrap replications
+##
+VectorizedPoissonBootstrap <- function(N, B, theta, ...) {
+  call <- match.call()
+  W <- BootPoissonWeights(N, B)
+  theta.star <- theta(W, ...)
+  as.vector(theta.star)
+}
+
