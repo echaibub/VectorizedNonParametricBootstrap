@@ -30,7 +30,15 @@ VectorizedBootstrap <- function(N, B, theta, ...) {
   as.vector(theta.star)
 }
 
-
+## Runs the vectorized bootstrap on two sample problems
+## N1: number of data points on group 1
+## N2: number of data points on group 2
+## B: number of bootstrap replications
+## theta: function of the bootstrap weights, computing the statistic 
+##        of interest (in vectorized form)
+## ... : additional arguments passed to the theta function 
+## returns a vector of bootstrap replications
+##
 Vectorized2SampleBootstrap <- function(N1, N2, B, theta, ...) {
   call <- match.call()
   W1 <- BootWeights(N1, B)
@@ -156,5 +164,106 @@ ReplicateVecTiming <- function(K = 3, N.seq, x1, x2) {
   list(at1.W = at1.W/K, at2.W = at2.W/K, at3.W = at3.W/K,
        at1.M = at1.M/K, at2.M = at2.M/K, at3.M = at3.M/K)
 }
+
+
+##############################################
+## Additional function used in the tutorial
+##############################################
+
+## mean example
+
+ThetaMean <- function(idx, x) {
+  mean(x[idx])
+}
+
+ThetaMean2 <- function(x, idx) {
+  mean(x[idx])
+}
+
+LoopMeanBootstrap <- function(B, x) {
+  N <- length(x)
+  out <- rep(NA, B) 
+  for (i in seq(B)) {
+    idx <- sample(N, replace = TRUE)
+    out[i] <- mean(x[idx])
+  }
+  out
+}
+
+SampleBootMean <- function(W, x) {
+  crossprod(x, W)
+}
+
+
+## Welch's statistic example
+
+LoopWelchsBootstrap <- function(B, x1, x2) {
+  n1 <- length(x1)
+  n2 <- length(x2)
+  n <- n1 + n2
+  stat <- rep(NA, B) 
+  x.bar <- mean(c(x1, x2))
+  x1.tilda <- x1 - mean(x1) + x.bar
+  x2.tilda <- x2 - mean(x2) + x.bar
+  for (i in seq(B)) {
+    i1 <- sample(n1, replace = TRUE)
+    i2 <- sample(n2, replace = TRUE)
+    stat[i] <- WelchsTestStat(x1.tilda[i1], x2.tilda[i2])
+  }
+  stat
+}
+
+WelchsTestStat <- function(x1, x2) {
+  n1 <- length(x1)
+  n2 <- length(x2)
+  s2.1 <- var(x1)
+  s2.2 <- var(x2)
+  xbar.1 <- mean(x1)
+  xbar.2 <- mean(x2)
+  s.12 <- sqrt((s2.1/n1) + (s2.2/n2))
+  (xbar.1 - xbar.2)/s.12
+}
+
+ThetaWelchs <- function(x, f) {
+  i1 <- which(x[, 2] == 1)
+  i2 <- which(x[, 2] == 2)
+  n1 <- length(i1)
+  n2 <- length(i2)
+  x.tilda <- x
+  x.tilda[i1, 1] <- x[i1, 1] - mean(x[i1, 1]) + mean(x[, 1])
+  x.tilda[i2, 1] <- x[i2, 1] - mean(x[i2, 1]) + mean(x[, 1])
+  x <- x.tilda
+  xbar.1 <- sum(x[i1, 1] * f[i1])/sum(f[i1])
+  s2.1 <- sum(x[i1, 1]^2 * f[i1])/sum(f[i1]) - xbar.1^2
+  s2.1 <- n1 * s2.1/(n1 - 1)
+  xbar.2 <- sum(x[i2, 1] * f[i2])/sum(f[i2])
+  s2.2 <- sum(x[i2, 1]^2 * f[i2])/sum(f[i2]) - xbar.2^2  
+  s2.2 <- n2 * s2.2/(n2 - 1)
+  s.12 <- sqrt((s2.1/n1) + (s2.2/n2))
+  (xbar.1 - xbar.2)/s.12
+}
+
+SampleBootWelchs <- function(W1, W2, x1, x2) {
+  n1 <- length(x1)
+  n2 <- length(x2)
+  x.bar <- mean(c(x1, x2))
+  x1.tilda <- x1 - mean(x1) + x.bar
+  x2.tilda <- x2 - mean(x2) + x.bar
+  xbar.1 <- crossprod(x1.tilda, W1)
+  xbar.2 <- crossprod(x2.tilda, W2)  
+  s2.1 <- x1.tilda^2
+  s2.1 <- crossprod(s2.1, W1)
+  s2.1 <- s2.1 - xbar.1^2 
+  s2.1 <- n1 * s2.1/(n1 - 1)
+  s2.2 <- x2.tilda^2
+  s2.2 <- crossprod(s2.2, W2)
+  s2.2 <- s2.2 - xbar.2^2 
+  s2.2 <- n2 * s2.2/(n2 - 1)
+  s.12 <- sqrt((s2.1/n1) + (s2.2/n2))
+  (xbar.1 - xbar.2)/s.12
+}
+
+
+
 
 
