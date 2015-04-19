@@ -4,9 +4,7 @@
 ## package standard capabilities
 ## #####################################################
 
-
 library("parallel")
-
 
 ## Implements the parLapply parallel version of the 
 ## "for loop" computation of Pearson's correlation coefficient.
