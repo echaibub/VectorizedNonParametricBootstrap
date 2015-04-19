@@ -82,3 +82,24 @@ SplitReplications <- function(x, k) {
   c(rep(aux1, k - 1), aux1 + aux2)
 }
 
+
+## Merges VectorizedBootstrap and SampleCorBoot into a single
+## function.
+##
+VectorizedCorBootstrap <- function(B, N, x1, x2) {
+  W <- rmultinom(B, N, rep(1/N, N))
+  W <- W/N
+  xbar.1 <- crossprod(x1, W)
+  xbar.2 <- crossprod(x2, W)
+  s2.1 <- x1^2
+  s2.1 <- crossprod(s2.1, W)
+  s2.1 <- s2.1 - xbar.1^2
+  s2.2 <- x2^2
+  s2.2 <- crossprod(s2.2, W)
+  s2.2 <- s2.2 - xbar.2^2  
+  s.12 <- x1 * x2
+  s.12 <- crossprod(s.12, W)
+  s.12 <- s.12 - xbar.1 * xbar.2
+  theta.star <- s.12/sqrt(s2.1 * s2.2) 
+  as.vector(theta.star)
+}
